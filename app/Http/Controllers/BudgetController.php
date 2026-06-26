@@ -104,7 +104,15 @@ class BudgetController extends Controller
         $query = DB::table('budgets')
             ->select([
                 'budgets.id',
-                'budgets.uuid',
+                DB::raw("
+                    LOWER(CONCAT(
+                        SUBSTR(HEX(budgets.uuid), 1, 8), '-',
+                        SUBSTR(HEX(budgets.uuid), 9, 4), '-',
+                        SUBSTR(HEX(budgets.uuid), 13, 4), '-',
+                        SUBSTR(HEX(budgets.uuid), 17, 4), '-',
+                        SUBSTR(HEX(budgets.uuid), 21)
+                    )) as uuid
+                "),
                 'budgets.name',
                 'budgets.type',
                 'budgets.budget_year',

@@ -24,20 +24,62 @@
     </div>
 </div>
 
+@php
+use Illuminate\Support\HtmlString;
+
+$columns = [
+    ['data' => 'expense_number', 'title' => 'Expense #'],
+
+    ['data' => 'expense_date', 'title' => 'Date', 'render' => new HtmlString(
+        'function(data) { return window.formatDate(data); }'
+    )],
+
+    ['data' => 'category', 'title' => 'Category'],
+
+    ['data' => 'payment_method', 'title' => 'Payment', 'render' => new HtmlString(
+        'function(data) {
+            return data.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase());
+        }'
+    )],
+
+    ['data' => 'total_amount', 'title' => 'Amount', 'render' => new HtmlString(
+        'function(data, type, row) {
+            return window.formatCurrency(data, row.currency);
+        }'
+    )],
+
+    ['data' => 'budget_name', 'title' => 'Budget', 'render' => new HtmlString(
+        'function(data) {
+            return data ? data : \'<span class="text-muted">—</span>\';
+        }'
+    )],
+
+    ['data' => 'status', 'title' => 'Status', 'orderable' => false, 'render' => new HtmlString(
+        'function(data) {
+            return data == 1
+                ? \'<span class="badge bg-success">Active</span>\'
+                : \'<span class="badge bg-secondary">Inactive</span>\';
+        }'
+    )],
+
+    ['data' => 'actions', 'title' => 'Actions', 'orderable' => false, 'searchable' => false, 'render' => new HtmlString(
+        'function(data, type, row) {
+            return `<a href="/expenses/${row.id}/edit" class="btn btn-sm btn-outline-primary me-1">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <button onclick="deleteExpense(${row.id})" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash"></i>
+                    </button>`;
+        }'
+    )],
+];
+@endphp
+
 <x-card>
     <x-datatable
         id="expenses-table"
         :ajaxUrl="route('expenses.datatable')"
-        :columns="[
-            ['data' => 'expense_number', 'title' => 'Expense #'],
-            ['data' => 'expense_date', 'title' => 'Date', 'render' => 'function(data) { return window.formatDate(data); }'],
-            ['data' => 'category', 'title' => 'Category'],
-            ['data' => 'payment_method', 'title' => 'Payment', 'render' => 'function(data) { return data.replace(/_/g, \" \").replace(/\\b\\w/g, l => l.toUpperCase()); }'],
-            ['data' => 'total_amount', 'title' => 'Amount', 'render' => 'function(data, type, row) { return window.formatCurrency(data, row.currency); }'],
-            ['data' => 'budget_name', 'title' => 'Budget', 'render' => 'function(data) { return data ? data : \'<span class=\"text-muted\">—</span>\'; }'],
-            ['data' => 'status', 'title' => 'Status', 'orderable' => false, 'render' => 'function(data) { return data == 1 ? \'<span class=\"badge bg-success\">Active</span>\' : \'<span class=\"badge bg-secondary\">Inactive</span>\'; }'],
-            ['data' => 'actions', 'title' => 'Actions', 'orderable' => false, 'searchable' => false, 'render' => 'function(data, type, row) { return `<a href=\"/expenses/${row.id}/edit\" class=\"btn btn-sm btn-outline-primary me-1\"><i class=\"bi bi-pencil\"></i></a><button onclick=\"deleteExpense(${row.id})\" class=\"btn btn-sm btn-outline-danger\"><i class=\"bi bi-trash\"></i></button>`; }']
-        ]"
+        :columns="$columns"
         :orderColumn="1"
         orderDirection="desc"
     />
