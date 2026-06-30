@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\DTOs\CustomerDTO;
 use App\Http\Requests\Customer\StoreCustomerRequest;
 use App\Repositories\Interfaces\CustomerRepositoryInterface;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use App\Models\Customer;
 
 class CustomerController extends Controller
 {
@@ -36,10 +38,10 @@ class CustomerController extends Controller
             ->with('success', 'Customer created successfully');
     }
 
-    public function edit(int $id): View
+    public function edit(Customer $customer): View
     {
-        $customer = $this->customerRepository->find($id);
-        abort_if(!$customer, 404);
+        // $customer = $this->customerRepository->find($customer->id);
+        // abort_if(!$customer, 404);
 
         return view('customers.edit', compact('customer'));
     }

@@ -38,7 +38,7 @@ $columns = [
 
     ['data' => 'actions', 'title' => 'Actions', 'orderable' => false, 'searchable' => false, 'render' => new \Illuminate\Support\HtmlString(
         'function(data, type, row) {
-            return `<a href="/customers/${row.id}/edit" class="btn btn-sm btn-outline-primary me-1">
+            return `<a href="/customers/${row.uuid}/edit" class="btn btn-sm btn-outline-primary me-1">
                         <i class="bi bi-pencil"></i>
                     </a>
                     <button onclick="deleteCustomer(${row.id})" class="btn btn-sm btn-outline-danger">
