@@ -48,3 +48,32 @@ function something()
 {
     // ..
 }
+
+
+
+uses()->group('unit')->in('Unit');
+uses()->group('feature')->in('Feature');
+uses()->group('integration')->in('Integration');
+uses()->group('api')->in('Api');
+uses()->group('security')->in('Security');
+uses()->group('performance')->in('Performance');
+
+uses(RefreshDatabase::class)->in('Feature', 'Integration', 'Api', 'Security', 'Performance');
+
+beforeEach(function () {
+    // Clear caches before each test
+    \Illuminate\Support\Facades\Cache::flush();
+    \Illuminate\Support\Facades\RateLimiter::clear('login|' . request()->ip());
+    \Illuminate\Support\Facades\RateLimiter::clear('purchase-invoice-create|' . request()->ip());
+    \Illuminate\Support\Facades\RateLimiter::clear('sales-invoice-create|' . request()->ip());
+    \Illuminate\Support\Facades\RateLimiter::clear('payment-create|' . request()->ip());
+});
+
+// Custom expectations
+expect()->extend('toBeValidUuid', function () {
+    return $this->toMatch('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i');
+});
+
+expect()->extend('toBeDecimal', function (int $precision = 2) {
+    return $this->toMatch('/^\d+\.\d{' . $precision . '}$/');
+});
